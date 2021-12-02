@@ -8,6 +8,9 @@ def create_polls_table(dynamodb=None):
         dynamodb = boto3.resource(
             "dynamodb", endpoint_url="http://localhost:8000")
 
+    if dynamodb.Table("Poll_Counter").table_status == "ACTIVE":
+        return dynamodb.Table("Polls"), dynamodb.Table("Poll_Counter")
+
     poll_counter_table = dynamodb.create_table(
         TableName="Poll_Counter",
         KeySchema=[
@@ -46,5 +49,5 @@ def create_polls_table(dynamodb=None):
 
 if __name__ == "__main__":
     polls_table = create_polls_table()
-    print("Table status:",
-          polls_table[0].table_status, polls_table[1].table_status)
+    print(
+        f"Polls Table status: {polls_table[0].table_status}\nCounter Table status: { polls_table[1].table_status}",)
