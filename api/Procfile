@@ -1,0 +1,5 @@
+registry: hug -p $PORT -f registry.py --access-logfile - --capture-output registry:__hug_wsgi__
+users: hug -p $PORT -f users.py --access-logfile - --capture-output users:__hug_wsgi__
+timelines: hug -p $PORT -f timelines.py --access-logfile - --capture-output timelines:__hug_wsgi__
+likes: hug -p $PORT -f likes.py --access-logfile - --capture-output likes:__hug_wsgi__
+polls: hug -p $PORT -f polls.py --access-logfile - --capture-output polls:__hug_wsgi__
