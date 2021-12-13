@@ -5,6 +5,7 @@ import os
 import configparser
 import time
 from socket import *
+import greenstalk
 
 
 SORTED_SET_KEY = "popular_posts"
@@ -51,6 +52,12 @@ def redis_db(host="localhost", port=6379, db=0, **kwargs):
     return r
 
 
+@hug.directive()
+def message_queue(ip="127.0.0.1", port=11301, **kwargs):
+    client = greenstalk.Client((ip, port))
+    return client
+
+
 # Like a post
 @hug.post("/like/")
 def like(response, post_id: hug.types.number, username: hug.types.text, db: redis_db):
@@ -62,6 +69,32 @@ def like(response, post_id: hug.types.number, username: hug.types.text, db: redi
         }
 
     try:
+        db.incr(TOTAL_PREFIX + str(post_id))
+        db.sadd(LIKED_PREFIX + username, f"{POST_PATH}{post_id}")
+        likes = db.get(TOTAL_PREFIX + str(post_id))
+        db.zadd(SORTED_SET_KEY, {f"{POST_PATH}{post_id}": likes})
+    except Exception as e:
+        response.status = hug.falcon.HTTP_409
+        return {"status": hug.falcon.HTTP_409, "message": f"Something went wrong - {e}"}
+
+    return {"message": f"{username} has liked {POST_PATH}{post_id}"}
+
+
+@hug.post("/async/like/")
+def async_like(response,
+               post_id: hug.types.number,
+               username: hug.types.text,
+               db: redis_db,
+               client: message_queue):
+    if db.sismember(LIKED_PREFIX + username, f"{POST_PATH}{post_id}"):
+        response.status = hug.falcon.HTTP_403
+        return {
+            "status": hug.falcon.HTTP_403,
+            "message": f"{username} has already like /posts/{post_id}",
+        }
+
+    try:
+        client.put(f"{post_id} {username}")
         db.incr(TOTAL_PREFIX + str(post_id))
         db.sadd(LIKED_PREFIX + username, f"{POST_PATH}{post_id}")
         likes = db.get(TOTAL_PREFIX + str(post_id))

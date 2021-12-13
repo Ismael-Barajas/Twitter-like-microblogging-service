@@ -1,12 +1,13 @@
 import configparser
 from operator import itemgetter
-
 import hug
 import sqlite_utils
 import requests
 import os
 from socket import *
 import time
+import greenstalk
+import json
 
 TIMELINES_URL = "http://timelines.localhost"
 
@@ -47,6 +48,12 @@ def register(api):
 def sqlite(section="sqlite", key="dbfile", **kwargs):
     dbfile = config[section][key]
     return sqlite_utils.Database(dbfile)
+
+
+@hug.directive()
+def message_queue(ip="127.0.0.1", port=11300, **kwargs):
+    client = greenstalk.Client((ip, port))
+    return client
 
 
 # Authentication
@@ -249,3 +256,25 @@ def new_repost(
 def health_check(response):
     response.status = hug.falcon.HTTP_200
     return {"message": "Good to go."}
+
+
+# Asynchronous Endpoint
+@hug.post("/compose/async/post", requires=basic_authentication, status=hug.falcon.HTTP_202)
+def async_new_post(
+    response,
+    auth_user: hug.directives.user,
+    text: hug.types.text,
+    client: message_queue,
+):
+    newPost = json.dumps({
+        "username": auth_user[0]["username"],
+        "text": text,
+    })
+
+    try:
+        client.put(newPost)
+    except Exception as e:
+        response.status = hug.falcon.HTTP_409
+        return {"status": hug.falcon.HTTP_409, "message": str(e)}
+    response.status = hug.falcon.HTTP_202
+    return {"message": f"Your post has been created."}

@@ -1,0 +1,112 @@
+Synchronous EndPoint
+
+hey -H "Authorization: Basic $(echo -n ProfAvery:password | base64)" -H "Content-Type: application/json" -m POST -D "./test.json"  http://timelines.localhost/compose/post
+
+Summary:
+  Total:	20.1913 secs
+  Slowest:	3.7758 secs
+  Fastest:	0.0219 secs
+  Average:	0.6055 secs
+  Requests/sec:	9.9053
+  
+  Total data:	12124 bytes
+  Size/request:	61 bytes
+
+Response time histogram:
+  0.022 [1]	|
+  0.397 [133]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.773 [20]	|■■■■■■
+  1.148 [6]	|■■
+  1.524 [15]	|■■■■■
+  1.899 [4]	|■
+  2.274 [5]	|■■
+  2.650 [0]	|
+  3.025 [0]	|
+  3.400 [12]	|■■■■
+  3.776 [1]	|
+
+
+Latency distribution:
+  10% in 0.0472 secs
+  25% in 0.1215 secs
+  50% in 0.2390 secs
+  75% in 0.5768 secs
+  90% in 1.8941 secs
+  95% in 3.1741 secs
+  99% in 3.7758 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:	0.0016 secs, 0.0219 secs, 3.7758 secs
+  DNS-lookup:	0.0002 secs, 0.0000 secs, 0.0033 secs
+  req write:	0.0001 secs, 0.0000 secs, 0.0066 secs
+  resp wait:	0.6035 secs, 0.0218 secs, 3.7650 secs
+  resp read:	0.0002 secs, 0.0000 secs, 0.0026 secs
+
+Status code distribution:
+  [201]	197 responses
+
+Error distribution:
+  [3]	Post http://timelines.localhost/compose/post: net/http: request canceled (Client.Timeout exceeded while awaiting headers)
+
+
+
+
+Asynchronous EndPoint
+
+hey -H "Authorization: Basic $(echo -n ProfAvery:password | base64)" -H "Content-Type: application/json" -m POST -D "./test.json"  http://timelines.localhost/compose/async/post
+
+Summary:
+  Total:	3.2719 secs
+  Slowest:	3.1025 secs
+  Fastest:	0.0099 secs
+  Average:	0.4048 secs
+  Requests/sec:	61.1263
+  
+  Total data:	8400 bytes
+  Size/request:	42 bytes
+
+Response time histogram:
+  0.010 [1]	|
+  0.319 [159]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.628 [0]	|
+  0.938 [0]	|
+  1.247 [31]	|■■■■■■■■
+  1.556 [2]	|■
+  1.865 [1]	|
+  2.175 [0]	|
+  2.484 [0]	|
+  2.793 [0]	|
+  3.103 [6]	|■■
+
+
+Latency distribution:
+  10% in 0.0373 secs
+  25% in 0.1282 secs
+  50% in 0.1688 secs
+  75% in 0.2580 secs
+  90% in 1.1581 secs
+  95% in 1.2359 secs
+  99% in 3.0878 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:	0.0053 secs, 0.0099 secs, 3.1025 secs
+  DNS-lookup:	0.0037 secs, 0.0000 secs, 0.0293 secs
+  req write:	0.0002 secs, 0.0000 secs, 0.0111 secs
+  resp wait:	0.3986 secs, 0.0098 secs, 3.0810 secs
+  resp read:	0.0003 secs, 0.0000 secs, 0.0048 secs
+
+Status code distribution:
+  [202]	200 responses
+
+
+  In comparison to the async test the synchronous test was insanely slow.
+20+ seconds to complete the requests and even after those 20 seconds
+3 out of 200 requests failed and crashed the instance of the timelines server.
+
+  The Asynchronous test only took 3.2 secs to complete all the requests,
+out of the 200 requests none failed.
+
+  There is no comparison to be had between the two endpoints, Asynchronous is always better
+in this situation.
+
+
