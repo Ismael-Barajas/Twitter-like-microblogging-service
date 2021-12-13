@@ -53,8 +53,8 @@ def redis_db(host="localhost", port=6379, db=0, **kwargs):
 
 
 @hug.directive()
-def message_queue(ip="127.0.0.1", port=11301, **kwargs):
-    client = greenstalk.Client((ip, port))
+def message_queue(ip="127.0.0.1", port=11300, **kwargs):
+    client = greenstalk.Client((ip, port), use="like")
     return client
 
 

@@ -51,9 +51,15 @@ def sqlite(section="sqlite", key="dbfile", **kwargs):
 
 
 @hug.directive()
-def message_queue(ip="127.0.0.1", port=11300, **kwargs):
-    client = greenstalk.Client((ip, port))
+def message_queue_timeline(ip="127.0.0.1", port=11300, **kwargs):
+    client = greenstalk.Client((ip, port), use="timeline")
     return client
+
+
+# @hug.directive()
+# def message_queue_poll(ip="127.0.0.1", port=11300, **kwargs):
+#     client = greenstalk.Client((ip, port), use="poll")
+#     return client
 
 
 # Authentication
@@ -264,15 +270,23 @@ def async_new_post(
     response,
     auth_user: hug.directives.user,
     text: hug.types.text,
-    client: message_queue,
+    client: message_queue_timeline,
+    # poll_client: message_queue_poll,
 ):
     newPost = json.dumps({
         "username": auth_user[0]["username"],
         "text": text,
     })
 
+    poll_payload = json.dumps({
+        "username": auth_user[0]["username"],
+        "text": text,
+        "email": auth_user[0]["email"]
+    })
+
     try:
         client.put(newPost)
+        # poll_client.put(poll_payload)
     except Exception as e:
         response.status = hug.falcon.HTTP_409
         return {"status": hug.falcon.HTTP_409, "message": str(e)}

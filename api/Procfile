@@ -4,3 +4,6 @@ timelines: hug -p $PORT -f timelines.py --access-logfile - --capture-output time
 likes: hug -p $PORT -f likes.py --access-logfile - --capture-output likes:__hug_wsgi__
 polls: hug -p $PORT -f polls.py --access-logfile - --capture-output polls:__hug_wsgi__
 timelines_worker: python3 timelines_worker.py --access-logfile - --capture-output
+likes_worker: python3 likes_worker.py --access-logfile - --capture-output
+email_worker: python3 email_worker.py --access-logfile - --capture-output
+poll_worker: python3 poll_worker.py --access-logfile - --capture-output

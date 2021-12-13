@@ -13,7 +13,7 @@ dbfile = config["sqlite"]["dbfile"]
 db = sqlite_utils.Database(dbfile)
 
 
-with greenstalk.Client(('127.0.0.1', 11300)) as client:
+with greenstalk.Client(('127.0.0.1', 11300), watch="timeline") as client:
     while True:
         job = client.reserve()
         data = json.loads(job.body)
@@ -24,4 +24,5 @@ with greenstalk.Client(('127.0.0.1', 11300)) as client:
         except Exception as e:
             print(str(e))
             client.delete(job)
+            continue
         client.delete(job)
