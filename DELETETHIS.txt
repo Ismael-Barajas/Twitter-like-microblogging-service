@@ -1,0 +1,12 @@
+http POST polls.localhost/poll username='ProfAvery' question='test question' options:='["is that a plane? Nope just an option", "There goes another option", "Another option", "this is an option"]'
+
+http GET polls.localhost/poll/results/ProfAvery/1
+
+http DELETE polls.localhost/poll/delete poll_id='1' username='ProfAvery'
+
+http -a ProfAvery:password POST timelines.localhost/compose/async/post text="this is a test http://polls.localhost/poll/results/ProfAvery/1 post boi"
+
+
+http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+
+
+python -m smtpd -n -c DebuggingServer localhost:1025

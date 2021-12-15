@@ -272,11 +272,22 @@ def async_new_post(
     text: hug.types.text,
     client: message_queue_timeline,
     # poll_client: message_queue_poll,
+    # db: sqlite,
 ):
-    newPost = json.dumps({
-        "username": auth_user[0]["username"],
-        "text": text,
-    })
+
+    # posts = db["posts"]
+
+    # newPost = json.dumps({
+    #     "username": auth_user[0]["username"],
+    #     "text": text,
+    # })
+
+    # poll_payload = json.dumps({
+    #     "username": auth_user[0]["username"],
+    #     "text": text,
+    #     "email": auth_user[0]["email"],
+    #     "id": posts.last_pk + 1,
+    # })
 
     poll_payload = json.dumps({
         "username": auth_user[0]["username"],
@@ -285,10 +296,29 @@ def async_new_post(
     })
 
     try:
-        client.put(newPost)
+        # client.put(newPost)
+        client.put(poll_payload)
         # poll_client.put(poll_payload)
     except Exception as e:
         response.status = hug.falcon.HTTP_409
         return {"status": hug.falcon.HTTP_409, "message": str(e)}
     response.status = hug.falcon.HTTP_202
     return {"message": f"Your post has been created."}
+
+
+# Delete a post by id
+@hug.delete("/delete/post/{id}")
+def delete_post(
+    response,
+    id: hug.types.number,
+    db: sqlite
+):
+    try:
+        db["posts"].delete(id)
+    except sqlite_utils.db.NotFoundError:
+        response.status = hug.falcon.HTTP_404
+        return {
+            "status": hug.falcon.HTTP_404,
+            "message": f"Post:{id} does not exist",
+        }
+    return {"message": f"Post:{id} has been deleted."}

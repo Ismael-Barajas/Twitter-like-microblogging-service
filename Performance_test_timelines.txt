@@ -99,14 +99,14 @@ Status code distribution:
   [202]	200 responses
 
 
-  In comparison to the async test the synchronous test was insanely slow.
+In comparison to the async test the synchronous test was insanely slow.
 20+ seconds to complete the requests and even after those 20 seconds
 3 out of 200 requests failed and crashed the instance of the timelines server.
 
-  The Asynchronous test only took 3.2 secs to complete all the requests,
+The Asynchronous test only took 3.2 secs to complete all the requests,
 out of the 200 requests none failed.
 
-  There is no comparison to be had between the two endpoints, Asynchronous is always better
+There is no comparison to be had between the two endpoints, Asynchronous is always better
 in this situation.
 
 
