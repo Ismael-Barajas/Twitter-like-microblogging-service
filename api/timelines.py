@@ -271,34 +271,15 @@ def async_new_post(
     auth_user: hug.directives.user,
     text: hug.types.text,
     client: message_queue_timeline,
-    # poll_client: message_queue_poll,
-    # db: sqlite,
 ):
-
-    # posts = db["posts"]
-
-    # newPost = json.dumps({
-    #     "username": auth_user[0]["username"],
-    #     "text": text,
-    # })
-
-    # poll_payload = json.dumps({
-    #     "username": auth_user[0]["username"],
-    #     "text": text,
-    #     "email": auth_user[0]["email"],
-    #     "id": posts.last_pk + 1,
-    # })
 
     poll_payload = json.dumps({
         "username": auth_user[0]["username"],
         "text": text,
         "email": auth_user[0]["email"]
     })
-
     try:
-        # client.put(newPost)
         client.put(poll_payload)
-        # poll_client.put(poll_payload)
     except Exception as e:
         response.status = hug.falcon.HTTP_409
         return {"status": hug.falcon.HTTP_409, "message": str(e)}

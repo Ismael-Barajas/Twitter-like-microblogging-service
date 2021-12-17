@@ -26,12 +26,9 @@ with greenstalk.Client(('127.0.0.1', 11300), watch="timeline") as client:
 
             posts_table = db["posts"]
             posts_table.insert(post)
-
-            ###
             data["id"] = posts_table.last_pk
             poll_payload = json.dumps(data)
             poll_client.put(poll_payload)
-            ###
         except Exception as e:
             print(str(e))
             client.delete(job)
